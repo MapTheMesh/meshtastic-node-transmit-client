@@ -123,34 +123,12 @@ _FIRMWARE_VERSION=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cu
 _HARDWARE=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cut -d ' ' -f2- | jq -r .hwModel)
 _ROLE=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cut -d ' ' -f2- | jq -r .role)
 
-# use the meshtastic CLI to get the nodes
-# and save the output to a file
-echo $'- Fetching nodes from Meshtastic Device...'
-echo $"    - Command: \"meshtastic ${CONNECTION} --nodes\""
-MESHTASTIC_NODES_OUTPUT=$(meshtastic $CONNECTION --nodes)
-_NODES_TMP_FILE=$(mktemp /tmp/com.friendlydev.node-transmit.XXXXXXXXXXXX)
-echo "${MESHTASTIC_NODES_OUTPUT}" > "${_NODES_TMP_FILE}"
-
-# extract the node data we need from the output
-_NODES=$(echo "${MESHTASTIC_NODES_OUTPUT}" | awk 'NR % 2' | tail -n +2)
-
-# check if the output is empty
-if [ -z "${_NODES}" ]; then
-  rm -f -- "${_NODES_TMP_FILE}"
-  echo $'- No nodes found...'
-else
-  # pipe the output to the parse.php script
-  echo $'- Parsing nodes into JSON for upload...'
-  _NODES_JSON_TMP_FILE=$(mktemp /tmp/com.friendlydev.node-transmit.XXXXXXXXXXXX)
-  echo "${_NODES}" | python parse_nodes.py | jq . > "${_NODES_JSON_TMP_FILE}"
-fi
-
 # if the user has a custom MESHTASTIC_API_URL set, use that
 if [ -z "${MESHTASTIC_API_URL}" ]; then
   MESHTASTIC_API_URL="https://api.themesh.live/upload-nodes"
 fi
 
-echo $'- Uploading nodes to the server...'
+echo $'- Uploading node info to the server...'
 printf "    - Endpoint: \"%s\"\n" "$MESHTASTIC_API_URL"
 
 # upload the payload to the server
@@ -167,8 +145,6 @@ curl \
   --data-urlencode "role=${_ROLE}" \
   --data-urlencode "info=$(safeurl_encode $(base64 < "${_INFO_TMP_FILE}"))" \
   --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
-  --data-urlencode "nodes=$(safeurl_encode $(base64 < "${_NODES_JSON_TMP_FILE}"))" \
-  --data-urlencode "nodes_hash=$(data_hash "${_NODES_JSON_TMP_FILE}")" \
   "${MESHTASTIC_API_URL}"
 
 # let user know if upload was successful
@@ -183,8 +159,6 @@ echo $'- Cleaning up...'
 
 # cleanup the files
 rm -f -- "${_INFO_TMP_FILE}"
-rm -f -- "${_NODES_TMP_FILE}"
-rm -f -- "${_NODES_JSON_TMP_FILE}"
 
 echo $'\nAll done!'
 
