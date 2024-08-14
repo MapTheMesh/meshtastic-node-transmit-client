@@ -65,6 +65,14 @@ safeurl_encode() {
   echo "${data//=/}"
 }
 
+# get hash of the data
+data_hash() {
+  local data="$1"
+  data=$(sha512sum < "${data}")
+  data="${data//-/}"
+  echo "${data// /}"
+}
+
 CONNECTION=""
 
 # if MESHTASTIC_PORT is set, then use it as the connection string
@@ -158,9 +166,9 @@ curl \
   --data-urlencode "hardware=${_HARDWARE}" \
   --data-urlencode "role=${_ROLE}" \
   --data-urlencode "info=$(safeurl_encode $(base64 < "${_INFO_TMP_FILE}"))" \
-  --data-urlencode "info_hash=$(sha512sum < "${_INFO_TMP_FILE}")" \
+  --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
   --data-urlencode "nodes=$(safeurl_encode $(base64 < "${_NODES_JSON_TMP_FILE}"))" \
-  --data-urlencode "nodes_hash=$(sha512sum < "${_NODES_JSON_TMP_FILE}")" \
+  --data-urlencode "nodes_hash=$(data_hash "${_NODES_JSON_TMP_FILE}")" \
   "${MESHTASTIC_API_URL}"
 
 # let user know if upload was successful
