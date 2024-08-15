@@ -46,19 +46,21 @@ if ! command -v jq &> /dev/null; then
   exit 1
 fi
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 # read the environment variables if the .env file exists
 if [ -f .env ]; then
   unamestr=$(uname)
 
   if [ "$unamestr" = 'Linux' ]; then
-    export $(grep -v '^#' .env | xargs -d '\n')
+    export $(grep -v '^#' "${SCRIPT_DIR}/.env" | xargs -d '\n')
   elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'Darwin' ]; then
-    export $(grep -v '^#' .env | xargs -0)
+    export $(grep -v '^#' "${SCRIPT_DIR}/.env" | xargs -0)
   fi
 fi
 
 # safeurl encode function
-safeurl_encode() {
+function safeurl_encode() {
   local data="$1"
   data="${data//+//}"
   data="${data//-/_}"
@@ -66,7 +68,7 @@ safeurl_encode() {
 }
 
 # get hash of the data
-data_hash() {
+function data_hash() {
   local data="$1"
   data=$(sha512sum < "${data}")
   data="${data//-/}"
