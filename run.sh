@@ -145,7 +145,7 @@ curl \
   --data-urlencode "firmware=${_FIRMWARE_VERSION}" \
   --data-urlencode "hardware=${_HARDWARE}" \
   --data-urlencode "role=${_ROLE}" \
-  --data-urlencode "info=$(safeurl_encode $(base64 < "${_INFO_TMP_FILE}"))" \
+  --data-urlencode "info=$(safeurl_encode $(base64 -w 0 < "${_INFO_TMP_FILE}"))" \
   --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
   "${MESHTASTIC_API_URL}"
 
