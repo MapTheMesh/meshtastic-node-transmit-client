@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 # print ascii header if the terminal is wide enough
-if [ $(tput cols) -lt 165 ]; then
-  echo $'╔════════════════════════════╗';
-  echo $'║         Meshtastic         ║';
-  echo $'║    Node Transmit Client    ║';
-  echo $'╚════════════════════════════╝\n';
-else
+if [ "$(tput cols)" -gt 165 ]; then
   echo "                                                                                                                                                                     ";
   echo "╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗";
   echo "║                                                                                                                                                                   ║";
@@ -26,6 +21,11 @@ else
   echo "║                                                                                                                                                                   ║";
   echo "╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝";
   echo "                                                                                                                                                                     ";
+else
+  echo $'╔════════════════════════════╗';
+  echo $'║         Meshtastic         ║';
+  echo $'║    Node Transmit Client    ║';
+  echo $'╚════════════════════════════╝\n';
 fi
 
 # check if python is installed
@@ -134,23 +134,26 @@ echo $'- Uploading node info to the server...'
 printf "    - Endpoint: \"%s\"\n" "$MESHTASTIC_API_URL"
 
 # upload the payload to the server
-curl \
-  --silent \
-  -o /dev/null \
-  -H "Accept: application/json" \
-  -H "Authorization: Bearer ${API_KEY}" \
-  -H 'Content-Type: application/x-www-form-urlencoded; charset=utf-8' \
-  --data-urlencode "owner=${_OWNER}" \
-  --data-urlencode "id=${_ID}" \
-  --data-urlencode "firmware=${_FIRMWARE_VERSION}" \
-  --data-urlencode "hardware=${_HARDWARE}" \
-  --data-urlencode "role=${_ROLE}" \
-  --data-urlencode "info=$(safeurl_encode $(base64 -w 0 < "${_INFO_TMP_FILE}"))" \
-  --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
-  "${MESHTASTIC_API_URL}"
+response_code=$(
+  curl \
+    --silent \
+    --output /dev/null \
+    --write-out "%{http_code}" \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer ${API_KEY}" \
+    -H 'Content-Type: application/x-www-form-urlencoded; charset=utf-8' \
+    --data-urlencode "owner=${_OWNER}" \
+    --data-urlencode "id=${_ID}" \
+    --data-urlencode "firmware=${_FIRMWARE_VERSION}" \
+    --data-urlencode "hardware=${_HARDWARE}" \
+    --data-urlencode "role=${_ROLE}" \
+    --data-urlencode "info=$(safeurl_encode $(base64 < "${_INFO_TMP_FILE}" | tr -d '\n\r'))" \
+    --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
+    "${MESHTASTIC_API_URL}"
+)
 
 # let user know if upload was successful
-if [ $? -eq 0 ]; then
+if [ $? -eq 0 ] && [ "${response_code}" -eq 200 ]; then
   echo $'    - Upload successful'
 else
   echo $'    - Upload failed'
