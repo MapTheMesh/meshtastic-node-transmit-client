@@ -125,6 +125,12 @@ _FIRMWARE_VERSION=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cu
 _HARDWARE=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cut -d ' ' -f2- | jq -r .hwModel)
 _ROLE=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Metadata: ' | cut -d ' ' -f2- | jq -r .role)
 
+echo $"        - OWNER: ${_OWNER}"
+echo $"        - ID: ${_ID}"
+echo $"        - FIRMWARE_VERSION: ${_FIRMWARE_VERSION}"
+echo $"        - HARDWARE: ${_HARDWARE}"
+echo $"        - ROLE: ${_ROLE}"
+
 # if the user has a custom MESHTASTIC_API_URL set, use that
 if [ -z "${MESHTASTIC_API_URL}" ]; then
   MESHTASTIC_API_URL="https://api.themesh.live/upload-nodes"
