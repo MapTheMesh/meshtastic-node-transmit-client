@@ -42,5 +42,5 @@ jobs:
             ghcr.io/mapthemesh/meshtastic-node-transmit-client:${{ github.ref_name }}
           labels: |
             org.opencontainers.image.title=MapTheMesh Runner
-            org.opencontainers.image.description=Docker image for Cloudlog
+            org.opencontainers.image.description=Docker image for MapTheMesh Runner
             org.opencontainers.image.url=https://github.com/MapTheMesh/meshtastic-node-transmit-client/pkgs/container/meshtastic-node-transmit-client/
