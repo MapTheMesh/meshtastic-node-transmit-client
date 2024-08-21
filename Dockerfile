@@ -10,7 +10,7 @@ ADD run.sh /root/run.sh
 SHELL ["/bin/bash", "-c"]
 
 # Set the Terminal Environment
-ENV TERM xterm
+ENV TERM=xterm
 
 # Give execution rights on the cron scripts
 RUN chmod +x /root/run.sh
@@ -25,4 +25,3 @@ RUN apt update && \
 RUN pip install -r /root/requirements.txt
 
 ENTRYPOINT ["/bin/bash", "-c", "while :; do clear && /usr/bin/env bash -c /root/run.sh && sleep 900; done"]
-
