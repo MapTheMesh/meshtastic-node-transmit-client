@@ -1,5 +1,5 @@
 # Dockerfile to create image with cron services
-FROM ubuntu:latest
+FROM python:3.12-slim-bookworm
 MAINTAINER map.themesh.live
 
 # Add the script to the Docker Image
@@ -19,14 +19,10 @@ RUN chmod +x /root/run.sh
 RUN ln -sf /usr/share/zoneinfo/GMT /etc/localtime
 
 # Install Dependencies
-RUN apt update
-RUN apt install -y python3-pip
-RUN apt install -y python3-virtualenv
-RUN apt install -y jq
-RUN apt install -y curl
+RUN apt update && \
+    apt install -y jq curl
 
-RUN virtualenv -p python3 /root/venv
-ENV PATH="/root/venv/bin:$PATH"
-RUN /root/venv/bin/pip install -r /root/requirements.txt
+RUN pip install -r /root/requirements.txt
 
 ENTRYPOINT ["/bin/bash", "-c", "while :; do clear && /usr/bin/env bash -c /root/run.sh && sleep 900; done"]
+
