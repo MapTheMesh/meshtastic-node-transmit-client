@@ -24,4 +24,4 @@ RUN apt update && \
 
 RUN pip install -r /root/requirements.txt
 
-ENTRYPOINT ["/bin/bash", "-c", "while :; do clear && /usr/bin/env bash -c /root/run.sh && sleep 900; test $? -gt 128 && break; done"]
+ENTRYPOINT ["/bin/bash", "-c", "while :; do clear && /usr/bin/env bash -c /root/run.sh; sleep 900; done"]
