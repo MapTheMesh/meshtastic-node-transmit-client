@@ -1,6 +1,6 @@
 # Dockerfile to create image with cron services
 FROM python:3.12-slim-bookworm
-MAINTAINER map.themesh.live
+LABEL org.opencontainers.image.authors="mapthemesh@friendlydev.com"
 
 # Add the script to the Docker Image
 ADD requirements.txt /root/requirements.txt
