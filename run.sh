@@ -140,10 +140,11 @@ echo $'- Uploading node info to the server...'
 printf "    - Endpoint: \"%s\"\n" "$MESHTASTIC_API_URL"
 
 # upload the payload to the server
+_UPLOAD_TMP_FILE=$(mktemp /tmp/com.friendlydev.node-transmit.XXXXXXXXXXXX)
 response_code=$(
   curl \
     --silent \
-    --output /dev/null \
+    --output "${_UPLOAD_TMP_FILE}" \
     --write-out "%{http_code}" \
     -H "Accept: application/json" \
     -H "Authorization: Bearer ${API_KEY}" \
@@ -162,7 +163,9 @@ response_code=$(
 if [ $? -eq 0 ] && [ "${response_code}" -eq 200 ]; then
   echo $'    - Upload successful'
 else
-  echo $'    - Upload failed'
+  echo $'    - Upload failed!'
+  echo $'        - Response Code: ' "${response_code}"
+  echo $'        - Response: ' "$(cat "${_UPLOAD_TMP_FILE}")"
   exit 1
 fi
 
@@ -170,6 +173,7 @@ echo $'- Cleaning up...'
 
 # cleanup the files
 rm -f -- "${_INFO_TMP_FILE}"
+rm -f -- "${_UPLOAD_TMP_FILE}"
 
 echo $'\nAll done!'
 
