@@ -62,15 +62,15 @@ fi
 # safeurl encode function
 function safeurl_encode() {
   local data="$1"
-  data="${data//+//}"
-  data="${data//-/_}"
+  data="${data//+/-}"
+  data="${data//\//_}"
   echo "${data//=/}"
 }
 
 # get hash of the data
 function data_hash() {
   local data="$1"
-  data=$(sha512sum < "${data}")
+  data=$(echo $"${data}" | sha512sum)
   data="${data//-/}"
   echo "${data// /}"
 }
@@ -111,7 +111,7 @@ _INFO_TMP_FILE=$(mktemp /tmp/com.friendlydev.node-transmit.XXXXXXXXXXXX)
 echo "${MESHTASTIC_INFO_OUTPUT}" > "${_INFO_TMP_FILE}"
 
 # check if the output is empty
-if [ $_COMMAND_EXIT_CODE -ne 0 ]; then
+if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
   rm -f -- "${_INFO_TMP_FILE}"
   echo $'\nUnable to fetch node info\n'
   trap - EXIT
@@ -154,8 +154,8 @@ response_code=$(
     --data-urlencode "firmware=${_FIRMWARE_VERSION}" \
     --data-urlencode "hardware=${_HARDWARE}" \
     --data-urlencode "role=${_ROLE}" \
-    --data-urlencode "info=$(safeurl_encode $(base64 < "${_INFO_TMP_FILE}" | tr -d '\n\r'))" \
-    --data-urlencode "info_hash=$(data_hash "${_INFO_TMP_FILE}")" \
+    --data-urlencode "info=$(safeurl_encode "$(echo $"${MESHTASTIC_INFO_OUTPUT}" | base64)")" \
+    --data-urlencode "info_hash=$(data_hash "${MESHTASTIC_INFO_OUTPUT}")" \
     "${MESHTASTIC_API_URL}"
 )
 
