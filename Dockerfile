@@ -1,6 +1,8 @@
 # Dockerfile to create image with cron services
 FROM python:3.12-slim-bookworm
+
 LABEL org.opencontainers.image.authors="mapthemesh@friendlydev.com"
+LABEL org.opencontainers.image.source = "https://github.com/MapTheMesh/meshtastic-node-transmit-client"
 
 # Add the script to the Docker Image
 ADD requirements.txt /root/requirements.txt
