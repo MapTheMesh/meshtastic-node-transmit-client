@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # print ascii header if the terminal is wide enough
-if [ "$(tput cols)" -gt 165 ]; then
+if [[ $(tput cols) -gt 165 ]]; then
   echo "                                                                                                                                                                     ";
   echo "╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗";
   echo "║                                                                                                                                                                   ║";
@@ -22,26 +22,31 @@ if [ "$(tput cols)" -gt 165 ]; then
   echo "╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝";
   echo "                                                                                                                                                                     ";
 else
+  echo $'                              ';
   echo $'╔════════════════════════════╗';
   echo $'║         Meshtastic         ║';
   echo $'║    Node Transmit Client    ║';
-  echo $'╚════════════════════════════╝\n';
+  echo $'╚════════════════════════════╝';
+  echo $'                              ';
 fi
 
-# check if python is installed
-if ! command -v python &> /dev/null; then
-  echo "Python is not installed"
-  exit 1
+# # check if python is installed
+if ! command -v python &> /dev/null
+then
+    echo "Python not found"
+    exit 1
 fi
 
 # check if meshtastic is installed
-if ! command -v meshtastic &> /dev/null; then
-  echo "Meshtastic CLI is not installed"
+if ! command -v meshtastic &> /dev/null
+then
+  echo "Meshtastic CLI not found"
   exit 1
 fi
 
 # check if jq is installed
-if ! command -v jq &> /dev/null; then
+if ! command -v jq &> /dev/null
+then
   echo "\"jq\" is not installed"
   exit 1
 fi
