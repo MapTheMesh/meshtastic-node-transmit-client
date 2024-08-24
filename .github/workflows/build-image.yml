@@ -31,7 +31,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker images
+      - name: Build and push Docker images (old name)
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -40,6 +40,20 @@ jobs:
           tags: |
             ghcr.io/mapthemesh/meshtastic-node-transmit-client:latest
             ghcr.io/mapthemesh/meshtastic-node-transmit-client:${{ github.ref_name }}
+          labels: |
+            org.opencontainers.image.title=MapTheMesh Runner
+            org.opencontainers.image.description=Docker image for MapTheMesh Runner
+            org.opencontainers.image.url=https://github.com/MapTheMesh/meshtastic-node-transmit-client/pkgs/container/meshtastic-node-transmit-client/
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/mapthemesh/runner:latest
+            ghcr.io/mapthemesh/runner:${{ github.ref_name }}
           labels: |
             org.opencontainers.image.title=MapTheMesh Runner
             org.opencontainers.image.description=Docker image for MapTheMesh Runner
