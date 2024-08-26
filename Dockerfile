@@ -27,16 +27,10 @@ RUN apt update && \
 RUN pip install -r /root/requirements.txt
 
 # Create a bash script to run the run.sh script every 15 minutes
-RUN echo "*/15 * * * * source /etc/environment; PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; /root/run.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/meshtastic-node-transmit-client
-
-# Give execution rights on the cron scripts
-RUN chmod 0644 /etc/cron.d/meshtastic-node-transmit-client
+RUN echo "*/15 * * * * source /etc/environment; PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; /root/run.sh > /proc/1/fd/1 2>/proc/1/fd/2" >> /etc/crontab
 
 # Apply cron job
-RUN crontab /etc/cron.d/meshtastic-node-transmit-client
+RUN crontab /etc/crontab
 
-# Create the log file to be able to run tail
-RUN touch /var/log/cron.log
-
-# Run the command on container startup
-CMD echo $'Starting the runner for MapTheMesh'; printenv > /etc/environment; cron; echo $'Cron started, tailing the log file...'; tail -f /var/log/cron.log
+# Start the cron service
+ENTRYPOINT printenv > /etc/environment && /usr/sbin/cron -f
