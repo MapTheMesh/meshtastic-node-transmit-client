@@ -27,8 +27,7 @@ RUN apt update && \
 RUN pip install -r /root/requirements.txt
 
 # Create a bash script to run the run.sh script every 15 minutes
-#RUN echo "*/15 * * * * source /etc/environment; /bin/bash -c /root/run.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/meshtastic-node-transmit-client
-RUN echo "* * * * * source /etc/environment; PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; /root/run.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/meshtastic-node-transmit-client
+RUN echo "*/15 * * * * source /etc/environment; PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin; /root/run.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/meshtastic-node-transmit-client
 
 # Give execution rights on the cron scripts
 RUN chmod 0644 /etc/cron.d/meshtastic-node-transmit-client
