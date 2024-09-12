@@ -123,6 +123,23 @@ if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
   exit 1
 fi
 
+# use the meshtastic CLI to get the config
+# and save the output to a file
+echo $'- Fetching node config from Meshtastic Device...'
+echo $"    - Command: \"meshtastic ${CONNECTION} --export-config\""
+MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config)
+_COMMAND_EXIT_CODE=$?
+_INFO_TMP_CONFIG_FILE=$(mktemp /tmp/com.friendlydev.node-config.XXXXXXXXXXXX)
+echo "${MESHTASTIC_CONFIG_OUTPUT}" > "${_INFO_TMP_CONFIG_FILE}"
+
+# check if the output is empty
+if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
+  rm -f -- "${_INFO_TMP_CONFIG_FILE}"
+  echo $'\nUnable to fetch node config\n'
+  trap - EXIT
+  exit 1
+fi
+
 # extract the node info we need from the output
 _OWNER=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'Owner: ' | cut -d ' ' -f2-)
 _ID=$(echo "${MESHTASTIC_INFO_OUTPUT}" | grep -e 'My info: ' | cut -d ' ' -f3- | jq -r .myNodeNum)
@@ -161,6 +178,8 @@ response_code=$(
     --data-urlencode "role=${_ROLE}" \
     --data-urlencode "info=$(safeurl_encode "$(echo $"${MESHTASTIC_INFO_OUTPUT}" | base64)")" \
     --data-urlencode "info_hash=$(data_hash "${MESHTASTIC_INFO_OUTPUT}")" \
+    --data-urlencode "config=$(safeurl_encode "$(echo $"${MESHTASTIC_CONFIG_OUTPUT}" | base64)")" \
+    --data-urlencode "config_hash=$(data_hash "${MESHTASTIC_CONFIG_OUTPUT}")" \
     "${MESHTASTIC_API_URL}"
 )
 
@@ -179,6 +198,7 @@ echo $'- Cleaning up...'
 # cleanup the files
 rm -f -- "${_INFO_TMP_FILE}"
 rm -f -- "${_UPLOAD_TMP_FILE}"
+rm -f -- "${_INFO_TMP_CONFIG_FILE}"
 
 echo $'\nAll done!'
 
