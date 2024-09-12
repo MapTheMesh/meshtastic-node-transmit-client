@@ -123,21 +123,25 @@ if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
   exit 1
 fi
 
-# use the meshtastic CLI to get the config
-# and save the output to a file
-echo $'- Fetching node config from Meshtastic Device...'
-echo $"    - Command: \"meshtastic ${CONNECTION} --export-config\""
-MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config)
-_COMMAND_EXIT_CODE=$?
-_INFO_TMP_CONFIG_FILE=$(mktemp /tmp/com.friendlydev.node-config.XXXXXXXXXXXX)
-echo "${MESHTASTIC_CONFIG_OUTPUT}" > "${_INFO_TMP_CONFIG_FILE}"
+if [ -z "${MESHTASTIC_NO_INFO}" ]; then
+  # use the meshtastic CLI to get the config
+  # and save the output to a file
+  echo $'- Fetching node config from Meshtastic Device...'
+  echo $"    - Command: \"meshtastic ${CONNECTION} --export-config\""
+  MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config)
+  _COMMAND_EXIT_CODE=$?
+  _INFO_TMP_CONFIG_FILE=$(mktemp /tmp/com.friendlydev.node-config.XXXXXXXXXXXX)
+  echo "${MESHTASTIC_CONFIG_OUTPUT}" > "${_INFO_TMP_CONFIG_FILE}"
 
-# check if the output is empty
-if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
-  rm -f -- "${_INFO_TMP_CONFIG_FILE}"
-  echo $'\nUnable to fetch node config\n'
-  trap - EXIT
-  exit 1
+  # check if the output is empty
+  if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
+    rm -f -- "${_INFO_TMP_CONFIG_FILE}"
+    echo $'\nUnable to fetch node config\n'
+    trap - EXIT
+    exit 1
+  fi
+else
+  MESHTASTIC_CONFIG_OUTPUT=""
 fi
 
 # extract the node info we need from the output

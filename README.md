@@ -40,6 +40,29 @@ bash run.sh
 The configuration is done in the `.env` file.  
 The only required configuration option is your API key, which can be found here - [Meshtastic Node Transmit Server](https://map.themesh.live/)
 
+## Usage
+
+### Running the script against a USB connected Meshtastic device
+```bash
+API_KEY=your_api run.sh
+```
+
+### Running the script against a Bluetooth connected Meshtastic device
+```bash
+API_KEY=your_api MESHTASTIC_BLE=BLUETOOTH_MAC_HERE run.sh
+```
+
+### Running the script against a HTTP connected Meshtastic device
+```bash
+API_KEY=your_api MESHTASTIC_HOST=HTTP_URL_HERE run.sh
+```
+
+### Run the script and do not send the config YAML to the server
+```bash
+API_KEY=your_api MESHTASTIC_NO_INFO=true run.sh
+```
+The key part here is the `MESHTASTIC_NO_INFO=true` environment variable.
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
