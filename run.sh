@@ -135,10 +135,7 @@ if [ -z "${MESHTASTIC_NO_INFO}" ]; then
 
   # check if the output is empty
   if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
-    rm -f -- "${_INFO_TMP_CONFIG_FILE}"
     echo $'\nUnable to fetch node config\n'
-    trap - EXIT
-    exit 1
   fi
 else
   MESHTASTIC_CONFIG_OUTPUT=""
