@@ -124,6 +124,13 @@ if [[ $_COMMAND_EXIT_CODE -ne 0 ]]; then
 fi
 
 if [ -z "${MESHTASTIC_NO_INFO}" ]; then
+  # if MESHTASTIC_HOST is set, then sleep for 5 seconds
+  if [ -n "${MESHTASTIC_HOST}" ]; then
+    echo $'- Using MESHTASTIC_HOST as the connection string, sleeping for 5 seconds...'
+
+    sleep 5
+  fi
+
   # use the meshtastic CLI to get the config
   # and save the output to a file
   echo $'- Fetching node config from Meshtastic Device...'
