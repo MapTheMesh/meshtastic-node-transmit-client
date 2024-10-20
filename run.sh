@@ -110,7 +110,13 @@ fi
 # and save the output to a file
 echo $'- Fetching node info from Meshtastic Device...'
 echo $"    - Command: \"meshtastic ${CONNECTION} --info\""
-MESHTASTIC_INFO_OUTPUT=$(meshtastic $CONNECTION --info)
+
+if [ -z "${SHOW_ERRORS}" ]; then
+  MESHTASTIC_INFO_OUTPUT=$(meshtastic $CONNECTION --info 2>/dev/null)
+else
+  MESHTASTIC_INFO_OUTPUT=$(meshtastic $CONNECTION --info)
+fi
+
 _COMMAND_EXIT_CODE=$?
 _INFO_TMP_FILE=$(mktemp /tmp/com.friendlydev.node-transmit.XXXXXXXXXXXX)
 echo "${MESHTASTIC_INFO_OUTPUT}" > "${_INFO_TMP_FILE}"
@@ -135,7 +141,13 @@ if [ -z "${MESHTASTIC_NO_INFO}" ]; then
   # and save the output to a file
   echo $'- Fetching node config from Meshtastic Device...'
   echo $"    - Command: \"meshtastic ${CONNECTION} --export-config\""
-  MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config)
+
+  if [ -z "${DEBUG}" ]; then
+    MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config 2>/dev/null)
+  else
+    MESHTASTIC_CONFIG_OUTPUT=$(meshtastic $CONNECTION --export-config)
+  fi
+
   _COMMAND_EXIT_CODE=$?
   _INFO_TMP_CONFIG_FILE=$(mktemp /tmp/com.friendlydev.node-config.XXXXXXXXXXXX)
   echo "${MESHTASTIC_CONFIG_OUTPUT}" > "${_INFO_TMP_CONFIG_FILE}"
